@@ -1,0 +1,25 @@
+# dependencies
+/node_modules
+
+# IDE
+/.idea
+/.awcache
+/.vscode
+
+# misc
+/logs
+*.log
+npm-debug.log
+
+# tests
+/coverage
+/.nyc_output
+
+# dist
+/dist
+
+#config
+.npmrc
+.env
+/.npmrc
+/package-lock.json
