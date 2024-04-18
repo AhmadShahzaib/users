@@ -380,7 +380,7 @@ export class AppService extends BaseService<UserDocument> {
                                 color: rgb(23, 43, 77);
                               "
                             >
-                            Reset your password
+                            Verify your Account
                             </h3>
                             <h3
                               style="
@@ -417,7 +417,7 @@ export class AppService extends BaseService<UserDocument> {
                             <div class="text-author">
                               <p>
                                 <a
-                                  href="http://${serviceBaseUrl}/auth/account-verification?token?token=${userVerificaionToken}"
+                                  href="http://${serviceBaseUrl}/auth/account-verification?token=${userVerificaionToken}"
                                   class="btn btn-primary"
                                   style="background-color: #44CBFF; color: #fff"
                                   >Verify Email Address</a
