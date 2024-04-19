@@ -5,7 +5,7 @@ import { AppService } from '../app.service';
 import moment from 'moment';
 
 export const uploadDocument = async (
-  doc:any,
+  doc: any,
   profile: Express.Multer.File,
   appService: AppService,
   userModel: UsersModel | EditUserRequest,
@@ -16,7 +16,7 @@ export const uploadDocument = async (
     doc?.forEach(async (item) => {
       let key = await appService.uploadFile(
         item?.buffer,
-        `${tenantId}/${userModel.email}/driverDocuments/${moment().unix()}-${
+        `${tenantId}/${userModel.email}/userDocuments/${moment().unix()}-${
           item?.originalname
         }`,
         item.mimetype,
@@ -31,7 +31,7 @@ export const uploadDocument = async (
   if (profile) {
     let keyProfile = await appService.uploadFile(
       profile[0]?.buffer,
-      `${tenantId}/${userModel.email}/userProfile/${moment().unix()}-${
+      `${tenantId}/${userModel.email}/userDocuments/${moment().unix()}-${
         profile[0]?.originalname
       }`,
       profile[0].mimetype,
@@ -39,7 +39,7 @@ export const uploadDocument = async (
     userModel.userProfile = {
       key: keyProfile.key,
       name: profile[0]?.originalname,
-      date:moment().unix()
+      date: moment().unix(),
     };
   }
   return userModel;

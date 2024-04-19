@@ -117,14 +117,15 @@ async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
     //   Logger.error('Bucket does not exists!');
     //   throw new BadRequestException('Bucket does not exists!');
     // }
-    return await this.awsClient.s3Client
-      .upload({
-        Bucket: this.bucket,
-        Body: fileBuffer,
-        Key: fileName,
-        ...(contentType && { ContentType: contentType }),
-      })
-      .promise();
+    let response  = await this.awsClient.s3Client
+    .upload({
+      Bucket: this.bucket,
+      Body: fileBuffer,
+      Key: fileName,
+      ...(contentType && { ContentType: contentType }),
+    })
+    // .promise();
+    return response
   } catch (err) {
     Logger.error('Error while uploading file', err);
     throw err;
