@@ -6,7 +6,7 @@ import {
 } from '@shafiqrathore/logeld-tenantbackend-common-future';
 import { ConfigModule } from '@nestjs/config';
 import { Transport, ClientProxyFactory } from '@nestjs/microservices';
-
+import AwsClient from 'util/config';
 import { AppService } from './app.service';
 import { UserSchema } from './mongoDb/schema/schema';
 import { AppController } from './app.controller';
@@ -75,6 +75,7 @@ import { EmailService } from 'email.service';
     AppService,
     JwtAuthService,
     EmailService,
+    AwsClient,
     ConfigurationService,
     {
       provide: 'ROLE_SERVICE',
