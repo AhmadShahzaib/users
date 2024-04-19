@@ -124,7 +124,7 @@ async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
       Key: fileName,
       ...(contentType && { ContentType: contentType }),
     })
-    // .promise();
+    .promise();
     return response
   } catch (err) {
     Logger.error('Error while uploading file', err);
