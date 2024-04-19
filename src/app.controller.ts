@@ -220,7 +220,7 @@ export class AppController extends BaseController {
           'Unknown error while adding user occurred.',
         );
       }
-      let model: UserDocument = await getDocuments(userDoc, this.awsService);
+      let model: UserDocument = await getDocuments(userDoc, this.appService);
       Logger.log(`User added successfully. Creating response object.`);
       const result: UserResponse = new UserResponse(model);
       response.status(HttpStatus.CREATED).send({
@@ -325,7 +325,7 @@ export class AppController extends BaseController {
       const userList: UserResponse[] = [];
       for (const user of queryResponse) {
         let result = await this.appService.populateRole(user.role);
-        let model: UserDocument = await getDocuments(user, this.awsService);
+        let model: UserDocument = await getDocuments(user, this.appService);
         const jsonUser = model.toJSON();
         jsonUser.role = result;
         userList.push(new UserResponse(jsonUser, true));
