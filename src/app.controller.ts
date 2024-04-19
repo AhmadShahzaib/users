@@ -166,14 +166,15 @@ export class AppController extends BaseController {
 
   @AddDecorators()
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'driverProfile', maxCount: 1 }]),
+    FileFieldsInterceptor([  { name: 'userDocument', maxCount: 10 },
+    { name: 'profile', maxCount: 1 },]),
   )
   async addUsers(
     @Body() registerUserReqData: UsersModel,
     @UploadedFiles()
     files: {
-      driverProfile: Express.Multer.File;
-      driverDocuments: Express.Multer.File[];
+      userDocument: Express.Multer.File[];
+      profile: Express.Multer.File;
     },
     @Res() response: Response,
     @Req() request: Request,
@@ -203,8 +204,9 @@ export class AppController extends BaseController {
       Logger.log(`Validation completed with no errors or conflicts.`);
       registerUserReqData.tenantId = tenantId;
       let requestModel = await uploadDocument(
-        files?.driverProfile,
-        this.awsService,
+        files?.userDocument,       
+        files?.profile,
+        this.appService,
         registerUserReqData,
         tenantId,
       );
@@ -386,12 +388,13 @@ export class AppController extends BaseController {
 
       Logger.log(`Validation completed with no errors or conflicts.`);
       Logger.log(`Calling updateUser method of User Service`);
-      let requestModel = await uploadDocument(
-        files?.userProfile,
-        this.awsService,
-        editRequestData,
-        tenantId,
-      );
+      // let requestModel = await uploadDocument(
+      //   files?.userProfile,
+      //   this.awsService,
+      //   editRequestData,
+      //   tenantId,
+      // );
+      let requestModel ;
       const user = await this.appService.updateUser(
         id,
         requestModel as EditUserRequest,

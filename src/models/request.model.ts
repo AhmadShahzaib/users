@@ -105,7 +105,8 @@ export class UsersModel {
   @IsNotEmpty()
   @IsMongoId()
   role: string;
-
+  driverProfile?: Documents = {};
+  documents?: Documents[] = [];
   tenantId?: string;
   verificationToken:string;
   isVerified:boolean;

@@ -25,6 +25,8 @@ import { UsersModel } from './models/request.model';
 import { EditUserRequest } from './models/editRequest.model';
 import { Schema } from 'mongoose';
 import { ClientProxy } from '@nestjs/microservices';
+import { Base64 } from 'aws-sdk/clients/ecr';
+import AwsClient from './util/config';
 import { firstValueFrom } from 'rxjs';
 import { UserResponse } from './models/response.model';
 import { ResetPasswordRequest } from './models/updatePasswordRequest.model';
@@ -34,11 +36,13 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AppService extends BaseService<UserDocument> {
   private readonly logger = new Logger('UserService');
+  bucket = 'eld-uploads';
 
   constructor(
     private readonly JwtAuthService: JwtAuthService,
     @InjectModel('Users') private readonly userModel: Model<UserDocument>,
     @Inject('ROLE_SERVICE') private readonly clientRole: ClientProxy,
+    private readonly awsClient: AwsClient,
     @Inject(EmailService) private readonly emailService: EmailService,
     private readonly configService: ConfigService,
   ) {
@@ -105,6 +109,31 @@ export class AppService extends BaseService<UserDocument> {
       throw err;
     }
   };
+////
+//
+async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
+  try {
+    // if (!await this.checkBucketExists(this.bucket)) {
+    //   Logger.error('Bucket does not exists!');
+    //   throw new BadRequestException('Bucket does not exists!');
+    // }
+    return await this.awsClient.s3Client
+      .upload({
+        Bucket: this.bucket,
+        Body: fileBuffer,
+        Key: fileName,
+        ...(contentType && { ContentType: contentType }),
+      })
+      .promise();
+  } catch (err) {
+    Logger.error('Error while uploading file', err);
+    throw err;
+  }
+}
+//
+//
+
+
   loginForValidation = async (
     userName: string,
     id: string,
