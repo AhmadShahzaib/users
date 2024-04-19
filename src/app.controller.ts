@@ -439,9 +439,10 @@ export class AppController extends BaseController {
       Logger.log(
         `Calling populateRole method of User Service to populate role with role ID: ${user.role}`,
       );
-      let model: UserDocument = await getDocuments(user, this.awsService);
+      let model: UserDocument = await getDocuments(user, this.appService);
       const roleResponse = await this.appService.populateRole(model.role);
       const jsonUser = model.toJSON();
+      
       jsonUser.role = roleResponse;
       const result: UserResponse = new UserResponse(jsonUser, true);
       if (result) {

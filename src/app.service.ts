@@ -109,32 +109,49 @@ export class AppService extends BaseService<UserDocument> {
       throw err;
     }
   };
-////
-//
-async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
-  try {
-    // if (!await this.checkBucketExists(this.bucket)) {
-    //   Logger.error('Bucket does not exists!');
-    //   throw new BadRequestException('Bucket does not exists!');
-    // }
-    let response  = await this.awsClient.s3Client
-    .upload({
-      Bucket: this.bucket,
-      Body: fileBuffer,
-      Key: fileName,
-      ...(contentType && { ContentType: contentType }),
-    })
-    .promise();
-    return response
-  } catch (err) {
-    Logger.error('Error while uploading file', err);
-    throw err;
+  ////
+  //
+  async uploadFile(fileBuffer: Base64, fileName: string, contentType: string) {
+    try {
+      // if (!await this.checkBucketExists(this.bucket)) {
+      //   Logger.error('Bucket does not exists!');
+      //   throw new BadRequestException('Bucket does not exists!');
+      // }
+      let response = await this.awsClient.s3Client
+        .upload({
+          Bucket: this.bucket,
+          Body: fileBuffer,
+          Key: fileName,
+          ...(contentType && { ContentType: contentType }),
+        })
+        .promise();
+      return response;
+    } catch (err) {
+      Logger.error('Error while uploading file', err);
+      throw err;
+    }
   }
-}
-//
-//
+  //
+  //
+  async getObject(objectKey: string) {
+    try {
+      const params = {
+        Bucket: this.bucket,
+        Key: objectKey,
+      };
+      const data = await this.awsClient.s3Client.getObject(params).promise();
+      console.log(`Data =========================== `, data);
+      console.log(`Data Body =========================== `, data.Body);
 
-
+      return Buffer.from(data.Body).toString('base64');
+    } catch (err) {
+      Logger.error('Error while uploading file', err);
+      throw err;
+    }
+  }
+  //////
+  //
+  //
   loginForValidation = async (
     userName: string,
     id: string,
