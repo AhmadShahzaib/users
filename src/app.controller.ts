@@ -220,8 +220,12 @@ export class AppController extends BaseController {
           'Unknown error while adding user occurred.',
         );
       }
-      let model: UserDocument = await getDocuments(userDoc, this.appService);
       Logger.log(`User added successfully. Creating response object.`);
+      Logger.log(JSON.stringify(userDoc));
+
+      let model: UserDocument = await getDocuments(userDoc, this.appService);
+      Logger.log(`User image get.`);
+
       const result: UserResponse = new UserResponse(model);
       response.status(HttpStatus.CREATED).send({
         message: 'User has been created successfully',

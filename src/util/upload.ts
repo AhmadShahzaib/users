@@ -3,6 +3,7 @@ import { EditUserRequest, UsersModel } from 'models';
 import { AppService } from '../app.service';
 
 import moment from 'moment';
+import { Logger } from '@nestjs/common';
 
 export const uploadDocument = async (
   doc: any,
@@ -29,6 +30,8 @@ export const uploadDocument = async (
     });
   }
   if (profile) {
+    Logger.log(`Validation completed with no errors or conflicts.`);
+
     let keyProfile = await appService.uploadFile(
       profile[0]?.buffer,
       `${tenantId}/${userModel.email}/userDocuments/${moment().unix()}-${
