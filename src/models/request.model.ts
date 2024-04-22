@@ -93,10 +93,12 @@ export class UsersModel {
   @IsString()
   notes: string;
 
+
+  @ApiProperty()
   // @IsNumberString()
-  // @IsNotEmpty()
-  // @IsString()
-  // @MaxLength(15)
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(15)
   // @NotContains(' ')
   phoneNumber: string;
 

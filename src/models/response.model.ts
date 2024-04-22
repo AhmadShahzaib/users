@@ -86,15 +86,19 @@ export class UserResponse extends BaseResponseType {
     this.firstName = userDocument.firstName;
     this.lastName = userDocument.lastName;
     this.userProfile = userDocument.userProfile;
-    this.timeZone = !isJson
-      ? userDocument.get('timeZone')
-      : userDocument.timeZone;
+    // this.timeZone = !isJson
+    //   ? userDocument.get('timeZone')
+    //   : userDocument.timeZone;
     this.timeZone = userDocument.timeZone;
-    this.gender = !isJson ? userDocument.get('gender') : userDocument.gender;
+    // this.gender = !isJson ? userDocument?.get('gender') : userDocument.gender;
+    this.gender =  userDocument.gender;
+
     this.isActive = userDocument.isActive;
     this.notes = userDocument.notes;
     this.phoneNumber = userDocument.phoneNumber;
-    this.role = !isJson ? userDocument.get('role') : userDocument.role;
+    // this.role = !isJson ? userDocument?.get('role') : userDocument.role;
+    this.role = userDocument.role;
+
     this.tenantId = userDocument.tenantId;
     this.verificationToken=userDocument.verificationToken;
     this.isVerified = userDocument.isVerified;

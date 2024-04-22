@@ -31,11 +31,11 @@ export class EditUserRequest {
   profile?: Express.Multer.File;
   userProfile?: Documents = {};
   documents?: Documents[] = [];
+  @ApiProperty()
   @IsOptional()
   @MinLength(8)
   @MaxLength(20)
   @IsString()
-  @ApiProperty()
   password: string;
 
   @ApiProperty()
@@ -91,7 +91,7 @@ export class EditUserRequest {
   @IsNotEmpty()
   @MaxLength(15)
   @IsString()
-  @NotContains(' ')
+ 
   phoneNumber: string;
 
   @ApiProperty()

@@ -581,7 +581,7 @@ export class AppService extends BaseService<UserDocument> {
   ): Promise<UserDocument> => {
     try {
       options.isDeleted = false;
-      return await this.userModel.findById(id, options);
+      return await this.userModel.findById(id, options).lean();
     } catch (err) {
       this.logger.log('Error Logged in findUserById method of User Service');
       this.logger.error({ message: err.message, stack: err.stack });

@@ -4,6 +4,7 @@ export type Documents={
   name?:string;
   key?:string;
   date?:number
+  imagePath?:any
 }
 export default interface UserDocument extends Document {
   deviceId?: string;
