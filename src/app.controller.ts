@@ -356,8 +356,10 @@ export class AppController extends BaseController {
 
   @UpdateByIdDecorators()
   @UseInterceptors(
-    FileFieldsInterceptor([ { name: 'userDocument', maxCount: 10 },
-    { name: 'profile', maxCount: 1 },]),
+    FileFieldsInterceptor([
+      { name: 'userDocument', maxCount: 10 },
+      { name: 'profile', maxCount: 1 },
+    ]),
   )
   async updateById(
     @Param('id', MongoIdValidationPipe) id: string,
@@ -402,7 +404,7 @@ export class AppController extends BaseController {
       //   editRequestData,
       //   tenantId,
       // );
-      
+
       let requestModel = await uploadDocument(
         files?.userDocument,
         files?.profile,

@@ -24,23 +24,19 @@ export class EditUserRequest {
   @NotContains(' ')
   email: string;
 
-  @ApiPropertyOptional({
-    type: 'string',
-    format: 'binary',
-  })
-  profile?: Express.Multer.File;
+  profile?: Documents = {};
   userProfile?: Documents = {};
   documents?: Documents[] = [];
   @ApiProperty()
-  @IsOptional()
-  @MinLength(8)
+  // @MinLength(8)
   @MaxLength(20)
+  @IsOptional()
   @IsString()
   password: string;
 
   @ApiProperty()
-  @IsBoolean()
-  shouldUpdatePassword: boolean;
+  
+  shouldUpdatePassword: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -79,8 +75,8 @@ export class EditUserRequest {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsBoolean()
-  isActive?: boolean;
+  
+  isActive?: string;
 
   @ApiProperty()
   @IsOptional()

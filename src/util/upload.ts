@@ -30,7 +30,7 @@ export const uploadDocument = async (
     });
   }
   if (profile) {
-    Logger.log(`Validation completed with no errors or conflicts.`);
+    // Logger.log(`Validation completed with no errors or conflicts.`);
 
     let keyProfile = await appService.uploadFile(
       profile[0]?.buffer,
