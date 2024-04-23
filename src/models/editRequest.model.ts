@@ -35,7 +35,7 @@ export class EditUserRequest {
   password: string;
 
   @ApiProperty()
-  
+  @IsNotEmpty()
   shouldUpdatePassword: string;
 
   @ApiProperty()

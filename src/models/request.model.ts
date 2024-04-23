@@ -54,6 +54,10 @@ export class UsersModel {
 
   @ApiProperty()
   @IsNotEmpty()
+  shouldUpdatePassword: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   @NotContains(' ')
   userName: string;

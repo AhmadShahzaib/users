@@ -31,9 +31,8 @@ export const addUpdateValidations = async (
   }
 
   if (
-    requestData instanceof EditUserRequest &&
-    requestData.password &&
-    !requestData.shouldUpdatePassword
+    requestData.password == '' &&
+    requestData.shouldUpdatePassword == 'false'
   ) {
     delete requestData.password;
   }
