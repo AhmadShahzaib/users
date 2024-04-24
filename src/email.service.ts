@@ -5,19 +5,22 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class EmailService {
   private readonly transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: '127.0.0.1',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    host: 'mail.mydriverbook.com',
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: 'tekdev@tekhqs.com',
-      pass: 'Abacus@123',
+      user: 'support@mydriverbook.com',
+      pass: 'v#9ayLBFmPMXB^hm9JPR',
     },
   });
 
-  async sendMail(to: string, subject: string, htmlContent: string): Promise<void> {
+  async sendMail(
+    to: string,
+    subject: string,
+    htmlContent: string,
+  ): Promise<void> {
     const mailOptions = {
-      from: 'tekdev@tekhqs.com',
+      from: 'support@mydriverbook.com',
       to,
       subject,
       html: htmlContent,

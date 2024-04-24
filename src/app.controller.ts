@@ -59,7 +59,7 @@ export class AppController extends BaseController {
   constructor(
     private readonly appService: AppService,
     private readonly awsService: AwsService,
-    @Inject(EmailService) private readonly emailService: EmailService
+    @Inject(EmailService) private readonly emailService: EmailService,
   ) {
     super();
   }
@@ -78,7 +78,9 @@ export class AppController extends BaseController {
   }
   @UseInterceptors(MessagePatternResponseInterceptor)
   @MessagePattern({ cmd: 'get_user_for_login_validation' })
-  async getLoginUserForValidation(userLogin: any): Promise<UserResponse | HttpException> {
+  async getLoginUserForValidation(
+    userLogin: any,
+  ): Promise<UserResponse | HttpException> {
     try {
       const { userName, id, tenantId } = userLogin;
       return this.appService.loginForValidation(userName, id, tenantId);
@@ -131,9 +133,7 @@ export class AppController extends BaseController {
   }
   @UseInterceptors(new MessagePatternResponseInterceptor())
   @MessagePattern({ cmd: 'add_user' })
-  async addUser(
-    data
-  ): Promise<UserResponse | Error> {
+  async addUser(data): Promise<UserResponse | Error> {
     try {
       const user = await this.appService.register(data);
       if (user && Object.keys(user).length > 0) {
@@ -166,14 +166,17 @@ export class AppController extends BaseController {
 
   @AddDecorators()
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'driverProfile', maxCount: 1 }]),
+    FileFieldsInterceptor([
+      { name: 'userDocument', maxCount: 10 },
+      { name: 'profile', maxCount: 1 },
+    ]),
   )
   async addUsers(
     @Body() registerUserReqData: UsersModel,
     @UploadedFiles()
     files: {
-      driverProfile: Express.Multer.File;
-      driverDocuments: Express.Multer.File[];
+      userDocument: Express.Multer.File[];
+      profile: Express.Multer.File;
     },
     @Res() response: Response,
     @Req() request: Request,
@@ -203,8 +206,9 @@ export class AppController extends BaseController {
       Logger.log(`Validation completed with no errors or conflicts.`);
       registerUserReqData.tenantId = tenantId;
       let requestModel = await uploadDocument(
-        files?.driverProfile,
-        this.awsService,
+        files?.userDocument,
+        files?.profile,
+        this.appService,
         registerUserReqData,
         tenantId,
       );
@@ -218,8 +222,12 @@ export class AppController extends BaseController {
           'Unknown error while adding user occurred.',
         );
       }
-      let model: UserDocument = await getDocuments(userDoc, this.awsService);
       Logger.log(`User added successfully. Creating response object.`);
+      Logger.log(JSON.stringify(userDoc));
+
+      let model: UserDocument = await getDocuments(userDoc, this.appService);
+      Logger.log(`User image get.`);
+
       const result: UserResponse = new UserResponse(model);
       response.status(HttpStatus.CREATED).send({
         message: 'User has been created successfully',
@@ -278,7 +286,7 @@ export class AppController extends BaseController {
       const options: FilterQuery<UserDocument> = {};
       const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
-      options['$and']=[{tenantId:id}]
+      options['$and'] = [{ tenantId: id }];
       if (search) {
         options.$or = [];
         if (Types.ObjectId.isValid(search)) {
@@ -291,7 +299,7 @@ export class AppController extends BaseController {
         });
       }
       // options.$and = [];
-    //  options['$and'].push({ _id: { $ne: response.locals.user.id } });
+      //  options['$and'].push({ _id: { $ne: response.locals.user.id } });
 
       Logger.log(
         `Calling find method of User service with search options to get query.`,
@@ -323,7 +331,7 @@ export class AppController extends BaseController {
       const userList: UserResponse[] = [];
       for (const user of queryResponse) {
         let result = await this.appService.populateRole(user.role);
-        let model: UserDocument = await getDocuments(user, this.awsService);
+        let model: UserDocument = user;
         const jsonUser = model.toJSON();
         jsonUser.role = result;
         userList.push(new UserResponse(jsonUser, true));
@@ -348,13 +356,17 @@ export class AppController extends BaseController {
 
   @UpdateByIdDecorators()
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'userProfile', maxCount: 1 }]),
+    FileFieldsInterceptor([
+      { name: 'userDocument', maxCount: 10 },
+      { name: 'profile', maxCount: 1 },
+    ]),
   )
   async updateById(
     @Param('id', MongoIdValidationPipe) id: string,
     @UploadedFiles()
     files: {
-      userProfile: Express.Multer.File;
+      userDocument: Express.Multer.File[];
+      profile: Express.Multer.File;
     },
     @Body() editRequestData: EditUserRequest,
     @Res() response: Response,
@@ -386,9 +398,17 @@ export class AppController extends BaseController {
 
       Logger.log(`Validation completed with no errors or conflicts.`);
       Logger.log(`Calling updateUser method of User Service`);
+      // let requestModel = await uploadDocument(
+      //   files?.userProfile,
+      //   this.awsService,
+      //   editRequestData,
+      //   tenantId,
+      // );
+
       let requestModel = await uploadDocument(
-        files?.userProfile,
-        this.awsService,
+        files?.userDocument,
+        files?.profile,
+        this.appService,
         editRequestData,
         tenantId,
       );
@@ -436,9 +456,10 @@ export class AppController extends BaseController {
       Logger.log(
         `Calling populateRole method of User Service to populate role with role ID: ${user.role}`,
       );
-      let model: UserDocument = await getDocuments(user, this.awsService);
+      let model: UserDocument = await getDocuments(user, this.appService);
       const roleResponse = await this.appService.populateRole(model.role);
-      const jsonUser = model.toJSON();
+      const jsonUser = model;
+
       jsonUser.role = roleResponse;
       const result: UserResponse = new UserResponse(jsonUser, true);
       if (result) {
@@ -506,7 +527,6 @@ export class AppController extends BaseController {
     try {
       Logger.log(`find user with token`);
       let option = {
-        
         isDeleted: false,
         verificationToken: token,
       };
@@ -524,11 +544,14 @@ export class AppController extends BaseController {
     }
   }
   @UseInterceptors(new MessagePatternResponseInterceptor())
-  @MessagePattern({ cmd: 'update_user_validation'})
+  @MessagePattern({ cmd: 'update_user_validation' })
   async updateValidation(data: any): Promise<UserResponse | Error> {
     try {
-      const userID = data.id
-      const user = await this.appService.updateUserWithoutPassword(userID,data);
+      const userID = data.id;
+      const user = await this.appService.updateUserWithoutPassword(
+        userID,
+        data,
+      );
       // const user = await this.appService.findOne(option);
       if (user && Object.keys(user).length > 0) {
         Logger.log(`user data get successfully`);

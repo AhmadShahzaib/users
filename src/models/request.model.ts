@@ -54,6 +54,10 @@ export class UsersModel {
 
   @ApiProperty()
   @IsNotEmpty()
+  shouldUpdatePassword: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   @NotContains(' ')
   userName: string;
@@ -93,11 +97,13 @@ export class UsersModel {
   @IsString()
   notes: string;
 
-  @IsNumberString()
+
+  @ApiProperty()
+  // @IsNumberString()
   @IsNotEmpty()
   @IsString()
   @MaxLength(15)
-  @NotContains(' ')
+  // @NotContains(' ')
   phoneNumber: string;
 
   @ApiProperty()
@@ -105,7 +111,8 @@ export class UsersModel {
   @IsNotEmpty()
   @IsMongoId()
   role: string;
-
+  driverProfile?: Documents = {};
+  documents?: Documents[] = [];
   tenantId?: string;
   verificationToken:string;
   isVerified:boolean;
