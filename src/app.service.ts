@@ -198,7 +198,7 @@ export class AppService extends BaseService<UserDocument> {
       //code to create jwt token
       const userVerificaionToken = await this.JwtAuthService.signPayload(user);
       user.verificationToken = userVerificaionToken;
-      user.isVerified = false;
+      user.isVerified = true;
       const userdata = await this.userModel.create(user);
       const serviceBaseUrl = this.configService.get<string>('SERVICE_BASE_URL');
       const port = this.configService.get<string>('PORT');
