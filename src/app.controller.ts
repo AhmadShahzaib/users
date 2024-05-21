@@ -135,6 +135,19 @@ export class AppController extends BaseController {
   @MessagePattern({ cmd: 'add_user' })
   async addUser(data): Promise<UserResponse | Error> {
     try {
+      const { email, phoneNumber, userName } = data;
+    
+        const option: FilterQuery<UserDocument> = {
+          $and: [{ isDeleted: false }],
+          $or: [
+            { email: { $regex: new RegExp(`^${email}`, 'i') } },
+            { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
+            { phoneNumber: phoneNumber },
+          ],
+        };
+        Logger.log(`Calling request data validator from addUsers`);
+        await addUpdateValidations(this.appService, data, option);
+  
       const user = await this.appService.register(data);
       if (user && Object.keys(user).length > 0) {
         Logger.log(`user password update successfully`);
