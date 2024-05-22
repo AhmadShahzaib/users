@@ -146,7 +146,7 @@ export class AppController extends BaseController {
           ],
         };
         Logger.log(`Calling request data validator from addUsers`);
-        await addUpdateValidations(this.appService, data, option);
+        // await addUpdateValidations(this.appService, data, option);
   
       const user = await this.appService.register(data);
       if (user && Object.keys(user).length > 0) {
