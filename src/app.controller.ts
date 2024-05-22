@@ -47,6 +47,8 @@ import {
 import timezones from 'timezones-list';
 import UserDocument from './mongoDb/document/document';
 import { addUpdateValidations } from './util/addUpdate.validator';
+import { beforeUpdateValidations } from './util/beforeCreate.validator';
+
 import { checkStatusChangePermission } from './util/statusPermission.validator';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { uploadDocument } from 'util/upload';
@@ -156,6 +158,30 @@ export class AppController extends BaseController {
         Logger.log(`not find  user`);
         throw new NotFoundException(`user not found`);
       }
+    } catch (err) {
+      Logger.error({ message: err.message, stack: err.stack });
+      return err;
+    }
+  }
+  @UseInterceptors(new MessagePatternResponseInterceptor())
+  @MessagePattern({ cmd: 'validateUser' })
+  async validateUser(data) {
+    try {
+      const { email, phoneNumber } = data;
+    
+        const option: FilterQuery<UserDocument> = {
+          $and: [{ isDeleted: false }],
+          $or: [
+            { email: { $regex: new RegExp(`^${email}`, 'i') } },
+           
+            { phoneNumber: phoneNumber },
+          ],
+        };
+        Logger.log(`Calling request data validator from addUsers`);
+        let response  = await beforeUpdateValidations(this.appService, data, option);
+  
+     return response;
+     
     } catch (err) {
       Logger.error({ message: err.message, stack: err.stack });
       return err;
