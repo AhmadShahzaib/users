@@ -138,18 +138,18 @@ export class AppController extends BaseController {
   async addUser(data): Promise<UserResponse | Error> {
     try {
       const { email, phoneNumber, userName } = data;
-    
-        const option: FilterQuery<UserDocument> = {
-          $and: [{ isDeleted: false }],
-          $or: [
-            { email: { $regex: new RegExp(`^${email}`, 'i') } },
-            { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
-            { phoneNumber: phoneNumber },
-          ],
-        };
-        Logger.log(`Calling request data validator from addUsers`);
-        // await addUpdateValidations(this.appService, data, option);
-  
+
+      const option: FilterQuery<UserDocument> = {
+        $and: [{ isDeleted: false }],
+        $or: [
+          { email: { $regex: new RegExp(`^${email}`, 'i') } },
+          { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
+          { phoneNumber: phoneNumber },
+        ],
+      };
+      Logger.log(`Calling request data validator from addUsers`);
+      // await addUpdateValidations(this.appService, data, option);
+
       const user = await this.appService.register(data);
       if (user && Object.keys(user).length > 0) {
         Logger.log(`user password update successfully`);
@@ -163,25 +163,28 @@ export class AppController extends BaseController {
       return err;
     }
   }
-  @UseInterceptors(new MessagePatternResponseInterceptor())
+  // @UseInterceptors(new MessagePatternResponseInterceptor())
   @MessagePattern({ cmd: 'validateUser' })
-  async validateUser(data) {
+  async validateUser(data){
     try {
       const { email, phoneNumber } = data;
-    
-        const option: FilterQuery<UserDocument> = {
-          $and: [{ isDeleted: false }],
-          $or: [
-            { email: { $regex: new RegExp(`^${email}`, 'i') } },
-           
-            { phoneNumber: phoneNumber },
-          ],
-        };
-        Logger.log(`Calling request data validator from addUsers`);
-        let response  = await beforeUpdateValidations(this.appService, data, option);
-  
-     return response;
-     
+
+      const option: FilterQuery<UserDocument> = {
+        $and: [{ isDeleted: false }],
+        $or: [
+          { email: { $regex: new RegExp(`^${email}`, 'i') } },
+
+          { phoneNumber: phoneNumber },
+        ],
+      };
+      Logger.log(`Calling request data validator from addUsers`);
+      let response = await beforeUpdateValidations(
+        this.appService,
+        data,
+        option,
+      );
+
+      return response;
     } catch (err) {
       Logger.error({ message: err.message, stack: err.stack });
       return err;
