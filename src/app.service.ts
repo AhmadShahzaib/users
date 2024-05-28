@@ -23,6 +23,8 @@ import {
 import UserDocument from './mongoDb/document/document';
 import { UsersModel } from './models/request.model';
 import { EditUserRequest } from './models/editRequest.model';
+import { addUpdateValidations } from './util/addUpdate.validator';
+
 import { Schema } from 'mongoose';
 import { ClientProxy } from '@nestjs/microservices';
 import { Base64 } from 'aws-sdk/clients/ecr';
@@ -204,6 +206,19 @@ export class AppService extends BaseService<UserDocument> {
       const userVerificaionToken = await this.JwtAuthService.signPayload(user);
       user.verificationToken = userVerificaionToken;
       user.isVerified = true;
+      // const { email, phoneNumber, userName } = user;
+     
+   
+      //   const option: FilterQuery<UserDocument> = {
+      //     $and: [{ isDeleted: false }],
+      //     $or: [
+      //       { email: { $regex: new RegExp(`^${email}`, 'i') } },
+      //       { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
+      //       { phoneNumber: phoneNumber },
+      //     ],
+      //   };
+      //   Logger.log(`Calling request data validator from addUsers`);
+      //   await addUpdateValidations(this, user, option);
       const userdata = await this.userModel.create(user);
       const serviceBaseUrl = this.configService.get<string>('SERVICE_BASE_URL');
       const port = this.configService.get<string>('PORT');

@@ -17,13 +17,7 @@ export const addUpdateValidations = async (
       Logger.log(`Email already exists`);
       throw new ConflictException(`Email already exists`);
     }
-    if (
-      emailOccupier.userName.toLowerCase() ===
-      requestData.userName.toLowerCase()
-    ) {
-      Logger.log(`Username already exists`);
-      throw new ConflictException(`Username already exists`);
-    }
+  
     if (emailOccupier.phoneNumber === requestData.phoneNumber) {
       Logger.log(`Phone number already exists`);
       throw new ConflictException(`Phone number already exists`);
