@@ -165,7 +165,7 @@ export class AppController extends BaseController {
   }
   // @UseInterceptors(new MessagePatternResponseInterceptor())
   @MessagePattern({ cmd: 'validateUser' })
-  async validateUser(data){
+  async validateUser(data) {
     try {
       const { email, phoneNumber } = data;
 
@@ -231,14 +231,14 @@ export class AppController extends BaseController {
       }`,
     );
 
-    const { email, phoneNumber, userName } = registerUserReqData;
+    const { email, phoneNumber } = registerUserReqData;
     const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
     try {
       const option: FilterQuery<UserDocument> = {
-        $and: [{ isDeleted: false }],
+        $and: [{ isDeleted: false }, { tenantId }],
         $or: [
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
-          { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
+          // { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
           { phoneNumber: phoneNumber },
         ],
       };
@@ -427,11 +427,11 @@ export class AppController extends BaseController {
         $and: [{ _id: { $ne: id } }],
         $or: [
           { email: { $regex: new RegExp(`^${editRequestData.email}`, 'i') } },
-          {
-            userName: {
-              $regex: new RegExp(`^${editRequestData.userName}`, 'i'),
-            },
-          },
+          // {
+          //   userName: {
+          //     $regex: new RegExp(`^${editRequestData.userName}`, 'i'),
+          //   },
+          // },
           { phoneNumber: editRequestData.phoneNumber },
         ],
       };
