@@ -17,13 +17,7 @@ export const addUpdateValidations = async (
       Logger.log(`Email already exists`);
       throw new ConflictException(`Email already exists`);
     }
-    if (
-      emailOccupier.userName.toLowerCase() ===
-      requestData.userName.toLowerCase()
-    ) {
-      Logger.log(`Username already exists`);
-      throw new ConflictException(`Username already exists`);
-    }
+
     if (emailOccupier.phoneNumber === requestData.phoneNumber) {
       Logger.log(`Phone number already exists`);
       throw new ConflictException(`Phone number already exists`);
@@ -31,7 +25,7 @@ export const addUpdateValidations = async (
   }
 
   if (
-    requestData.password == '' &&
+    (requestData.password || requestData.password == '') &&
     requestData.shouldUpdatePassword == 'false'
   ) {
     delete requestData.password;
@@ -50,5 +44,5 @@ export const addUpdateValidations = async (
   requestData.timeZone = timezones[index];
 
   // Checking role
-  const role = await appService.populateRole(requestData.role);
+  // const role = await appService.populateRole(requestData.role);
 };

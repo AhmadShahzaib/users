@@ -10,7 +10,7 @@ import { UserResponse } from '../models/response.model';
 export default function GetByIdDecorators() {
   const GetByIdDecorators: Array<CombineDecoratorType> = [
     Get(':id'),
-    SetMetadata('permissions', [USER.GETBYID]),
+    SetMetadata('permissions', [USER.LIST]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: UserResponse }),
     ApiParam({

@@ -10,7 +10,7 @@ import { UserResponse } from '../models/response.model';
 export default function IsActiveDecorators() {
   const IsActiveDecorators: Array<CombineDecoratorType> = [
     Patch('/status/:id'),
-    SetMetadata('permissions', [USER.ACTIVATE]),
+    SetMetadata('permissions', [USER.EDIT]),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: UserResponse }),
     ApiParam({

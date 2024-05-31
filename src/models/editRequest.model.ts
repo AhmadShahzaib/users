@@ -39,10 +39,10 @@ export class EditUserRequest {
   shouldUpdatePassword: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @MaxLength(50)
+  // @IsNotEmpty()
+  // @MaxLength(50)
   @IsString()
-  @NotContains(' ')
+  // @NotContains(' ')
   userName: string;
 
   @ApiProperty()
@@ -75,7 +75,6 @@ export class EditUserRequest {
 
   @ApiProperty()
   @IsNotEmpty()
-  
   isActive?: string;
 
   @ApiProperty()
@@ -87,7 +86,6 @@ export class EditUserRequest {
   @IsNotEmpty()
   @MaxLength(15)
   @IsString()
- 
   phoneNumber: string;
 
   @ApiProperty()

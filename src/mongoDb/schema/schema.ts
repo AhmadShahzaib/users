@@ -20,7 +20,7 @@ const Documents = new mongoose.Schema(
 );
 export const UserSchema = new mongoose.Schema(
   {
-    userName: { type: String, required: true, index: true },
+    userName: { type: String, required: false, defaultValue: '' },
     deviceId: { type: Schema.Types.ObjectId, required: true, index: true },
     email: { type: String, required: true, index: true },
     gender: {
@@ -41,8 +41,8 @@ export const UserSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
     tenantId: { type: Schema.Types.ObjectId, index: true },
-    verificationToken:{type: String },
-    isVerified:{type: Boolean, default: false}
+    verificationToken: { type: String },
+    isVerified: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
