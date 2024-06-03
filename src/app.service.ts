@@ -202,9 +202,9 @@ export class AppService extends BaseService<UserDocument> {
     try {
       let sendMail;
       if(user.password == "120099678"){
-        sendMail = true;
-      }else {
         sendMail = false;
+      }else {
+        sendMail = true;
       }
       user.password = await this.hashPassword(user.password);
       user.isActive = true;
