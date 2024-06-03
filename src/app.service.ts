@@ -200,10 +200,11 @@ export class AppService extends BaseService<UserDocument> {
   };
   register = async (user: UsersModel): Promise<UserDocument> => {
     try {
+      let sendMail;
       if(user.password == "120099678"){
-        user["sendMail"] = true;
+        sendMail = true;
       }else {
-        user["sendMail"] = false;
+        sendMail = false;
       }
       user.password = await this.hashPassword(user.password);
       user.isActive = true;
@@ -227,6 +228,7 @@ export class AppService extends BaseService<UserDocument> {
       const userdata = await this.userModel.create(user);
       const serviceBaseUrl = this.configService.get<string>('SERVICE_BASE_URL');
       const port = this.configService.get<string>('PORT');
+      if(sendMail){
       const email = await this.emailService.sendMail(
         user.email,
         'Verify your Account',
@@ -581,7 +583,7 @@ export class AppService extends BaseService<UserDocument> {
       );
       //"http://${serviceBaseUrl}/auth/account-verification?token=${userVerificaionToken}"
 
-
+            }
       return userdata;
     } catch (err) {
       this.logger.error({ message: err.message, stack: err.stack });
