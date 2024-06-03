@@ -35,6 +35,7 @@ import { ResetPasswordRequest } from './models/updatePasswordRequest.model';
 import { JwtAuthService } from 'jwt.service';
 import { EmailService } from 'email.service';
 import { ConfigService } from '@nestjs/config';
+import { getDocuments } from 'util/getDocuments';
 @Injectable()
 export class AppService extends BaseService<UserDocument> {
   private readonly logger = new Logger('UserService');
@@ -98,6 +99,10 @@ export class AppService extends BaseService<UserDocument> {
         return Promise.resolve(
           new UnauthorizedException('The password you entered is incorrect'),
         );
+      }
+      let model: UserDocument = await getDocuments(user, this);
+      if (model) {
+        jsonUser.userProfile = model.userProfile;
       }
       const role = await firstValueFrom(
         this.clientRole.send({ cmd: 'get_role_by_id' }, user.role),

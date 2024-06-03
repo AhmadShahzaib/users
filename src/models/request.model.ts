@@ -57,9 +57,10 @@ export class UsersModel {
   shouldUpdatePassword: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  // @NotContains(' ')
+  @IsOptional()
   @IsString()
-  @NotContains(' ')
   userName: string;
   profile?: Documents = {};
 
@@ -97,7 +98,6 @@ export class UsersModel {
   @IsString()
   notes: string;
 
-
   @ApiProperty()
   // @IsNumberString()
   @IsNotEmpty()
@@ -114,6 +114,6 @@ export class UsersModel {
   driverProfile?: Documents = {};
   documents?: Documents[] = [];
   tenantId?: string;
-  verificationToken:string;
-  isVerified:boolean;
+  verificationToken: string;
+  isVerified: boolean;
 }
