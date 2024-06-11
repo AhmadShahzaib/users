@@ -174,7 +174,7 @@ export class AppController extends BaseController {
         $or: [
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
 
-          { phoneNumber: phoneNumber },
+          // { phoneNumber: phoneNumber },
         ],
       };
       Logger.log(`Calling request data validator from addUsers`);
