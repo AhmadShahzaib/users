@@ -327,6 +327,8 @@ export class AppController extends BaseController {
     try {
       const options: FilterQuery<UserDocument> = {};
       const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
+      const role =request.user["role"].roleName;
+     
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
       options['$and'] = [{ tenantId: id }];
       if (search) {
@@ -376,7 +378,10 @@ export class AppController extends BaseController {
         const model: UserDocument = user;
         const jsonUser = model.toJSON();
         jsonUser.role = result;
-        userList.push(new UserResponse(jsonUser, true));
+        if(role !="SuperAdmin" && result.roleName !="SuperAdmin" ){
+
+          userList.push(new UserResponse(jsonUser, true));
+        }
       }
 
       return response.status(HttpStatus.OK).send({
