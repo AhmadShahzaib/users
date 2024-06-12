@@ -100,7 +100,7 @@ export class AppService extends BaseService<UserDocument> {
           new UnauthorizedException('The password you entered is incorrect'),
         );
       }
-      let model: UserDocument = await getDocuments(user, this);
+      const model: UserDocument = await getDocuments(user, this);
       if (model) {
         jsonUser.userProfile = model.userProfile;
       }
@@ -124,7 +124,7 @@ export class AppService extends BaseService<UserDocument> {
       //   Logger.error('Bucket does not exists!');
       //   throw new BadRequestException('Bucket does not exists!');
       // }
-      let response = await this.awsClient.s3Client
+      const response = await this.awsClient.s3Client
         .upload({
           Bucket: this.bucket,
           Body: fileBuffer,
@@ -697,7 +697,7 @@ export class AppService extends BaseService<UserDocument> {
       throw err;
     }
   };
-  populateRole = async (id: Schema.Types.ObjectId | String): Promise<any> => {
+  populateRole = async (id: Schema.Types.ObjectId | string): Promise<any> => {
     const roleResp = await firstValueFrom(
       this.clientRole.send({ cmd: 'get_role_by_id' }, id),
     );
