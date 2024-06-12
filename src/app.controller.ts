@@ -95,7 +95,7 @@ export class AppController extends BaseController {
   async tcp_geUserByEmail(email: string): Promise<UserResponse | Error> {
     try {
       Logger.log(`find user with email`);
-      let option = {
+      const option = {
         isActive: true,
         isDeleted: false,
         email: { $regex: new RegExp(`^${email}`, 'i') },
@@ -178,7 +178,7 @@ export class AppController extends BaseController {
         ],
       };
       Logger.log(`Calling request data validator from addUsers`);
-      let response = await beforeUpdateValidations(
+      const response = await beforeUpdateValidations(
         this.appService,
         data,
         option,
@@ -247,7 +247,7 @@ export class AppController extends BaseController {
 
       Logger.log(`Validation completed with no errors or conflicts.`);
       registerUserReqData.tenantId = tenantId;
-      let requestModel = await uploadDocument(
+      const requestModel = await uploadDocument(
         files?.userDocument,
         files?.profile,
         this.appService,
@@ -267,7 +267,7 @@ export class AppController extends BaseController {
       Logger.log(`User added successfully. Creating response object.`);
       Logger.log(JSON.stringify(userDoc));
 
-      let model: UserDocument = await getDocuments(userDoc, this.appService);
+      const model: UserDocument = await getDocuments(userDoc, this.appService);
       Logger.log(`User image get.`);
 
       const result: UserResponse = new UserResponse(model);
@@ -372,8 +372,8 @@ export class AppController extends BaseController {
       queryResponse = await query.exec();
       const userList: UserResponse[] = [];
       for (const user of queryResponse) {
-        let result = await this.appService.populateRole(user.role);
-        let model: UserDocument = user;
+        const result = await this.appService.populateRole(user.role);
+        const model: UserDocument = user;
         const jsonUser = model.toJSON();
         jsonUser.role = result;
         userList.push(new UserResponse(jsonUser, true));
@@ -447,7 +447,7 @@ export class AppController extends BaseController {
       //   tenantId,
       // );
 
-      let requestModel = await uploadDocument(
+      const requestModel = await uploadDocument(
         files?.userDocument,
         files?.profile,
         this.appService,
@@ -498,7 +498,7 @@ export class AppController extends BaseController {
       Logger.log(
         `Calling populateRole method of User Service to populate role with role ID: ${user.role}`,
       );
-      let model: UserDocument = await getDocuments(user, this.appService);
+      const model: UserDocument = await getDocuments(user, this.appService);
       const roleResponse = await this.appService.populateRole(model.role);
       const jsonUser = model;
 
@@ -568,7 +568,7 @@ export class AppController extends BaseController {
   async getByToken(token: string): Promise<UserResponse | Error> {
     try {
       Logger.log(`find user with token`);
-      let option = {
+      const option = {
         isDeleted: false,
         verificationToken: token,
       };

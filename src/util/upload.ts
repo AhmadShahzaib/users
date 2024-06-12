@@ -15,7 +15,7 @@ export const uploadDocument = async (
   if (doc && doc.length > 0) {
     userModel.documents = [];
     doc?.forEach(async (item) => {
-      let key = await appService.uploadFile(
+      const key = await appService.uploadFile(
         item?.buffer,
         `${tenantId}/${userModel.email}/userDocuments/${moment().unix()}-${
           item?.originalname
@@ -32,7 +32,7 @@ export const uploadDocument = async (
   if (profile) {
     // Logger.log(`Validation completed with no errors or conflicts.`);
 
-    let keyProfile = await appService.uploadFile(
+    const keyProfile = await appService.uploadFile(
       profile[0]?.buffer,
       `${tenantId}/${userModel.email}/userDocuments/${moment().unix()}-${
         profile[0]?.originalname

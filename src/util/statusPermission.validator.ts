@@ -10,7 +10,7 @@ export const checkStatusChangePermission = async (
       (!isActive && !permission.canDeactivate)
     );
   });
-  if (!!permission) {
+  if (permission) {
     throw new ForbiddenException(
       "You don't have Permission to perform this action.",
     );
