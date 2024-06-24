@@ -9,7 +9,7 @@ export const getDocuments = async (
   if (user?.userProfile?.key) {
     let newUser: any = JSON.stringify(user);
     newUser = JSON.parse(newUser);
-    let url = await appService.getObject(newUser.userProfile.key);
+    const url = await appService.getObject(newUser.userProfile.key);
     newUser.userProfile.imagePath = `data:image/${newUser.userProfile.name
       .split('.')
       .pop()};base64,${url.replace(/\s+/g, '')}`;
