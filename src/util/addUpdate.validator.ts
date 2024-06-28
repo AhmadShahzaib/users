@@ -18,10 +18,10 @@ export const addUpdateValidations = async (
       throw new ConflictException(`Email already exists`);
     }
 
-    if (emailOccupier.phoneNumber === requestData.phoneNumber) {
-      Logger.log(`Phone number already exists`);
-      throw new ConflictException(`Phone number already exists`);
-    }
+    // if (emailOccupier.phoneNumber === requestData.phoneNumber) {
+    //   Logger.log(`Phone number already exists`);
+    //   throw new ConflictException(`Phone number already exists`);
+    // }
   }
 
   if (
