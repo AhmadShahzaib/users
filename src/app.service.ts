@@ -201,9 +201,9 @@ export class AppService extends BaseService<UserDocument> {
   register = async (user: UsersModel): Promise<UserDocument> => {
     try {
       let sendMail;
-      if(user.password == "120099678"){
+      if (user.password == '120099678') {
         sendMail = false;
-      }else {
+      } else {
         sendMail = true;
       }
       user.password = await this.hashPassword(user.password);
@@ -213,8 +213,7 @@ export class AppService extends BaseService<UserDocument> {
       user.verificationToken = userVerificaionToken;
       user.isVerified = true;
       // const { email, phoneNumber, userName } = user;
-     
-   
+
       //   const option: FilterQuery<UserDocument> = {
       //     $and: [{ isDeleted: false }],
       //     $or: [
@@ -228,11 +227,11 @@ export class AppService extends BaseService<UserDocument> {
       const userdata = await this.userModel.create(user);
       const serviceBaseUrl = this.configService.get<string>('SERVICE_BASE_URL');
       const port = this.configService.get<string>('PORT');
-      if(sendMail){
-      const email = await this.emailService.sendMail(
-        user.email,
-        'Verify your Account',
-        `<!DOCTYPE html>
+      if (sendMail) {
+        const email = await this.emailService.sendMail(
+          user.email,
+          'Verify your Account',
+          `<!DOCTYPE html>
         <html
           lang="en"
           xmlns="http://www.w3.org/1999/xhtml"
@@ -454,7 +453,7 @@ export class AppService extends BaseService<UserDocument> {
                                 color: rgb(23, 43, 77);
                               "
                             >
-                            Reset your password
+                            Welcome to DriverBook!
                             </h3>
                             <h3
                               style="
@@ -580,10 +579,9 @@ export class AppService extends BaseService<UserDocument> {
           </body>
         </html>
         `,
-      );
-      //"http://${serviceBaseUrl}/auth/account-verification?token=${userVerificaionToken}"
-
-            }
+        );
+        //"http://${serviceBaseUrl}/auth/account-verification?token=${userVerificaionToken}"
+      }
       return userdata;
     } catch (err) {
       this.logger.error({ message: err.message, stack: err.stack });
