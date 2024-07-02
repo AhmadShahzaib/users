@@ -245,7 +245,7 @@ export class AppService extends BaseService<UserDocument> {
       if (sendMail) {
         const email = await this.emailService.sendMail(
           user.email,
-          'Verify your Account',
+          'Account Confirmation',
           `<!DOCTYPE html>
         <html
           lang="en"
