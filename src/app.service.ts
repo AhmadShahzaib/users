@@ -157,6 +157,20 @@ export class AppService extends BaseService<UserDocument> {
     }
   }
   //////
+  userClient = async (id: string, client: any): Promise<UserDocument> => {
+    try {
+      return await this.userModel.findByIdAndUpdate(
+        id,
+        { client: client },
+        {
+          new: true,
+        },
+      );
+    } catch (err) {
+      this.logger.error({ message: err.message, stack: err.stack });
+      throw err;
+    }
+  };
   //
   //
   loginForValidation = async (

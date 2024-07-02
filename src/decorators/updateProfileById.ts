@@ -16,7 +16,7 @@ import { UserResponse } from '../models/response.model';
 export default function UpdateProfileByIdDecorators() {
   const UpdateProfileByIdDecorators: Array<CombineDecoratorType> = [
     Put('update/profile'),
-    SetMetadata('permissions', [USER.EDIT]),
+    SetMetadata('permissions', ["d41e39f3a"]),
     ApiConsumes('multipart/form-data'),
     ApiBearerAuth('access-token'),
     ApiResponse({ status: HttpStatus.OK, type: UserResponse }),
