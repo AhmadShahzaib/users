@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Inject,
+  ConflictException,
 } from '@nestjs/common';
 import { Types, Schema, FilterQuery, CastError, Error } from 'mongoose';
 import {
@@ -54,6 +55,8 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { uploadDocument } from 'util/upload';
 import { getDocuments } from 'util/getDocuments';
 import { EmailService } from 'email.service';
+import GetProfileByIdDecorators from 'decorators/getProfileById';
+import UpdateProfileByIdDecorators from 'decorators/updateProfileById';
 
 @Controller('user')
 @ApiTags('Users')
@@ -206,6 +209,132 @@ export class AppController extends BaseController {
     }
   }
 
+  // **************************** PROFILE METHODS ****************************
+
+  @GetProfileByIdDecorators()
+  async getUserProfileById(
+    // @Param('id', MongoIdValidationPipe) id: string,
+    @Query('id', MongoIdValidationPipe) id: string,
+    @Res() response: Response,
+    @Req() request: Request,
+  ) {
+    Logger.log(
+      `${request.method} request received from ${request.ip} for ${
+        request.originalUrl
+      } by: ${
+        !response.locals.user ? 'Unauthorized User' : response.locals.user.id
+      }`,
+    );
+    try {
+      Logger.log(`Calling findUserById method of User Service with id: ${id}`);
+      const user = await this.appService.findUserById(id);
+      if (!user) {
+        throw new NotFoundException(
+          `User ID not provided or invalid.`,
+          `${id} does not exist`,
+        );
+      }
+      Logger.log(
+        `Calling populateRole method of User Service to populate role with role ID: ${user.role}`,
+      );
+      const model: UserDocument = await getDocuments(user, this.appService);
+      const roleResponse = await this.appService.populateRole(model.role);
+      const jsonUser = model;
+
+      jsonUser.role = roleResponse;
+      const result: UserResponse = new UserResponse(jsonUser, true);
+      if (result) {
+        return response.status(200).send({
+          message: 'User found successfully',
+          data: result,
+        });
+      }
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      Logger.error({ message: error.message, stack: error.stack });
+      throw error;
+    }
+  }
+
+  @UpdateProfileByIdDecorators()
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'userDocument', maxCount: 10 },
+      { name: 'profile', maxCount: 1 },
+    ]),
+  )
+  async updateProfileById(
+    @Query('id', MongoIdValidationPipe) id: string,
+    @UploadedFiles()
+    files: {
+      userDocument: Express.Multer.File[];
+      profile: Express.Multer.File;
+    },
+    @Body() editRequestData: EditUserRequest,
+    @Res() response: Response,
+    @Req() request: Request,
+  ) {
+    Logger.log(
+      `${request.method} request received from ${request.ip} for ${
+        request.originalUrl
+      } by: ${
+        !response.locals.user ? 'Unauthorized User' : response.locals.user.id
+      }`,
+    );
+    try {
+      const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
+      const option: FilterQuery<UserDocument> = {
+        $and: [{ _id: { $ne: id } }],
+        $or: [
+          { email: { $regex: new RegExp(`^${editRequestData.email}`, 'i') } },
+          // {
+          //   userName: {
+          //     $regex: new RegExp(`^${editRequestData.userName}`, 'i'),
+          //   },
+          // },
+          // { phoneNumber: editRequestData.phoneNumber },
+        ],
+      };
+      Logger.log(`Calling request data validator from addUsers`);
+      await addUpdateValidations(this.appService, editRequestData, option);
+
+      Logger.log(`Validation completed with no errors or conflicts.`);
+      Logger.log(`Calling updateUser method of User Service`);
+      // let requestModel = await uploadDocument(
+      //   files?.userProfile,
+      //   this.awsService,
+      //   editRequestData,
+      //   tenantId,
+      // );
+
+      const requestModel = await uploadDocument(
+        files?.userDocument,
+        files?.profile,
+        this.appService,
+        editRequestData,
+        tenantId,
+      );
+      const user = await this.appService.updateUser(
+        id,
+        requestModel as EditUserRequest,
+      );
+      if (!user) {
+        throw new NotFoundException(`${id} does not exist`);
+      }
+      Logger.log(`User updated successfully. Creating response object.`);
+      const result: UserResponse = new UserResponse(user);
+      response.status(200).send({
+        message: 'User has been updated successfully',
+        data: result,
+      });
+    } catch (error) {
+      Logger.error({ message: error.message, stack: error.stack });
+      throw error;
+    }
+  }
+
   @AddDecorators()
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -231,20 +360,27 @@ export class AppController extends BaseController {
       }`,
     );
 
-    const { email, phoneNumber } = registerUserReqData;
+    const { email } = registerUserReqData;
     const { tenantId } = request.user ?? ({ tenantId: undefined } as any);
     try {
-      const option: FilterQuery<UserDocument> = {
+      let option: FilterQuery<UserDocument> = {
         $and: [{ isDeleted: false }, { tenantId }],
         $or: [
           { email: { $regex: new RegExp(`^${email}`, 'i') } },
           // { userName: { $regex: new RegExp(`^${userName}`, 'i') } },
-          { phoneNumber: phoneNumber },
+          // { phoneNumber: phoneNumber },
         ],
       };
       Logger.log(`Calling request data validator from addUsers`);
       await addUpdateValidations(this.appService, registerUserReqData, option);
 
+      // QQuery object for multi tenant wise check driverId
+      option.$and = [{ email: { $regex: new RegExp(`^${email}`, 'i') } }];
+      option.$or = [{}];
+      const user = await this.appService.findOne(option);
+      if (user) {
+        throw new ConflictException(`Email already exists`);
+      }
       Logger.log(`Validation completed with no errors or conflicts.`);
       registerUserReqData.tenantId = tenantId;
       const requestModel = await uploadDocument(
@@ -327,8 +463,8 @@ export class AppController extends BaseController {
     try {
       const options: FilterQuery<UserDocument> = {};
       const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
-      const role =request.user["role"].roleName;
-     
+      const role = request.user['role'].roleName;
+
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
       options['$and'] = [{ tenantId: id }];
       if (search) {
@@ -378,10 +514,22 @@ export class AppController extends BaseController {
         const model: UserDocument = user;
         const jsonUser = model.toJSON();
         jsonUser.role = result;
-        if(role !="SuperAdmin" && result.roleName !="SuperAdmin" ){
 
+        if (result.roleName != 'SuperAdmin') {
           userList.push(new UserResponse(jsonUser, true));
         }
+        // if (role === 'TekHqs Admin') {
+        //   userList.push(new UserResponse(jsonUser, true));
+        // } else if (role === 'SuperAdmin' && result.roleName != 'SuperAdmin') {
+        //   userList.push(new UserResponse(jsonUser, true));
+        // } else if (
+        //   role !== 'TekHqs Admin' &&
+        //   role !== 'SuperAdmin' &&
+        //   result.roleName != 'SuperAdmin' &&
+        //   result.roleName != 'TekHqs Admin'
+        // ) {
+        //   userList.push(new UserResponse(jsonUser, true));
+        // }
       }
 
       return response.status(HttpStatus.OK).send({
@@ -437,7 +585,7 @@ export class AppController extends BaseController {
           //     $regex: new RegExp(`^${editRequestData.userName}`, 'i'),
           //   },
           // },
-          { phoneNumber: editRequestData.phoneNumber },
+          // { phoneNumber: editRequestData.phoneNumber },
         ],
       };
       Logger.log(`Calling request data validator from addUsers`);
@@ -568,6 +716,7 @@ export class AppController extends BaseController {
       throw error;
     }
   }
+
   @UseInterceptors(new MessagePatternResponseInterceptor())
   @MessagePattern({ cmd: 'get_user_by_token' })
   async getByToken(token: string): Promise<UserResponse | Error> {
