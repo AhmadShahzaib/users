@@ -20,6 +20,7 @@ export default interface UserDocument extends Document {
   role: string;
   notes?: string;
   isActive?: boolean;
+  client?:string;
   tenantId?: string;
   isDeleted?: boolean;
   verificationToken?:string;

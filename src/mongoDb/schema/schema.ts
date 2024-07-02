@@ -30,6 +30,7 @@ export const UserSchema = new mongoose.Schema(
 
       default: Gender.Male,
     },
+    client:{type:String,required: false},
     firstName: { type: String, required: true, index: true },
     lastName: { type: String, required: true, index: true },
     phoneNumber: { type: String, required: true },

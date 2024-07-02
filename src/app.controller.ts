@@ -81,6 +81,27 @@ export class AppController extends BaseController {
       return error;
     }
   }
+
+  @UseInterceptors(new MessagePatternResponseInterceptor())
+  @MessagePattern({ cmd: 'update_user_client' })
+  async tcp_updateClient(data): Promise<UserResponse | Error> {
+    try {
+      const id = data.id;
+      const client = data.client;
+
+      const user = await this.appService.userClient(id, client);
+      if (user && Object.keys(user).length > 0) {
+        Logger.log(`driver client updated`);
+        return new UserResponse(user);
+      } else {
+        Logger.log(`not find  Driver`);
+        throw new NotFoundException(`driver not found`);
+      }
+    } catch (err) {
+      Logger.error({ message: err.message, stack: err.stack });
+      return err;
+    }
+  }
   @UseInterceptors(MessagePatternResponseInterceptor)
   @MessagePattern({ cmd: 'get_user_for_login_validation' })
   async getLoginUserForValidation(
