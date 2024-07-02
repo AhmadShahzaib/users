@@ -220,6 +220,7 @@ export class AppService extends BaseService<UserDocument> {
       } else {
         sendMail = true;
       }
+      const formPassword = user.password;
       user.password = await this.hashPassword(user.password);
       user.isActive = true;
       //code to create jwt token
@@ -479,7 +480,7 @@ export class AppService extends BaseService<UserDocument> {
                                 color: rgb(23, 43, 77);
                               "
                             >
-                              Dear ${user.firstName},
+                              Hello ${user.firstName},
                             </h3>
                             <div class="text">
                               <h4
@@ -492,42 +493,7 @@ export class AppService extends BaseService<UserDocument> {
                                   color: rgb(23, 43, 77);
                                 "
                               >
-                              Thank you for registering with DriverBook! To ensure the
-                              security of your account, please verify your email
-                              address by clicking the link below:
-                              </h4>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="text-align: center">
-                            <div class="text-author">
-                              <p>
-                                <a
-                                  href="http://${serviceBaseUrl}/auth/account-verification?token?token=${userVerificaionToken}"
-                                  class="btn btn-primary"
-                                  style="background-color: #44CBFF; color: #fff"
-                                  >Verify Email Address</a
-                                >
-                              </p>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 0 2.5em">
-                            <div class="text">
-                              <h4
-                                style="
-                                  margin-top: 25px;
-                                  font-family: Helvetica, Arial, sans-serif;
-                                  font-size: 14px;
-                                  font-weight: 400;
-                                  line-height: 20px;
-                                  color: rgb(23, 43, 77);
-                                "
-                              >
-                                This link is time-sensitive and will expire after 24
-                                hours.
+                              We're thrilled to announce that your account has been created for you on DriverBook.
                               </h4>
                             </div>
                           </td>
@@ -542,11 +508,66 @@ export class AppService extends BaseService<UserDocument> {
                                   font-weight: 400;
                                   line-height: 20px;
                                   color: rgb(23, 43, 77);
+                                  margin-top: 0px;
                                 "
                               >
-                                If you did not register on DriverBook or have any
-                                concerns, please contact our support team at
-                                support@mydriverbook.com.
+                                Your login credentials are as follows:
+                              </h4>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 0 2.5em">
+                            <div class="text">
+                              <h4
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  font-size: 14px;
+                                  font-weight: 400;
+                                  line-height: 20px;
+                                  color: rgb(23, 43, 77);
+                                  margin: 0px;
+                                "
+                              >
+                                <b>Email:</b>${user.email}
+                              </h4>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 0 2.5em">
+                            <div class="text">
+                              <h4
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  font-size: 14px;
+                                  font-weight: 400;
+                                  line-height: 20px;
+                                  color: rgb(23, 43, 77);
+                                   margin: 0px;
+                                "
+                              >
+                                <b>Password:</b>${formPassword}
+                              </h4>
+                            </div>
+                          </td>
+                        </tr>
+                         <tr>
+                          <td style="padding: 0 2.5em">
+                            <div class="text">
+                              <h4
+                                style="
+                                  font-family: Helvetica, Arial, sans-serif;
+                                  font-size: 14px;
+                                  font-weight: 400;
+                                  line-height: 20px;
+                                  color: rgb(23, 43, 77);
+                                   margin-block: 0px;
+                                "
+                              >
+                                To access your DriverBook support account, simply 
+                                <a href="http://${serviceBaseUrl}">click here<a/> 
+                                and log in using the provided credentials.
                               </h4>
                             </div>
                           </td>
