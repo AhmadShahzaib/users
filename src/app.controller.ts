@@ -81,6 +81,27 @@ export class AppController extends BaseController {
       return error;
     }
   }
+
+  @UseInterceptors(new MessagePatternResponseInterceptor())
+  @MessagePattern({ cmd: 'update_user_client' })
+  async tcp_updateClient(data): Promise<UserResponse | Error> {
+    try {
+      const id = data.id;
+      const client = data.client;
+
+      const user = await this.appService.userClient(id, client);
+      if (user && Object.keys(user).length > 0) {
+        Logger.log(`driver client updated`);
+        return new UserResponse(user);
+      } else {
+        Logger.log(`not find  Driver`);
+        throw new NotFoundException(`driver not found`);
+      }
+    } catch (err) {
+      Logger.error({ message: err.message, stack: err.stack });
+      return err;
+    }
+  }
   @UseInterceptors(MessagePatternResponseInterceptor)
   @MessagePattern({ cmd: 'get_user_for_login_validation' })
   async getLoginUserForValidation(
@@ -463,7 +484,7 @@ export class AppController extends BaseController {
     try {
       const options: FilterQuery<UserDocument> = {};
       const { tenantId: id } = request.user ?? ({ tenantId: undefined } as any);
-      const role = request.user['role'].roleName;
+      const role = request.user['role'];
 
       const { search, orderBy, orderType, pageNo, limit } = queryParams;
       options['$and'] = [{ tenantId: id }];
@@ -515,21 +536,26 @@ export class AppController extends BaseController {
         const jsonUser = model.toJSON();
         jsonUser.role = result;
 
-        if (result.roleName != 'SuperAdmin') {
-          userList.push(new UserResponse(jsonUser, true));
-        }
-        // if (role === 'TekHqs Admin') {
-        //   userList.push(new UserResponse(jsonUser, true));
-        // } else if (role === 'SuperAdmin' && result.roleName != 'SuperAdmin') {
-        //   userList.push(new UserResponse(jsonUser, true));
-        // } else if (
-        //   role !== 'TekHqs Admin' &&
-        //   role !== 'SuperAdmin' &&
-        //   result.roleName != 'SuperAdmin' &&
-        //   result.roleName != 'TekHqs Admin'
-        // ) {
+        // if (result.roleName != 'SuperAdmin') {
         //   userList.push(new UserResponse(jsonUser, true));
         // }
+
+        if (role?.id === '6329cdf541c5047250e3d822') {
+          userList.push(new UserResponse(jsonUser, true));
+        } else if (
+          role?.id === '633d27619abbb80ad0ec512a' &&
+          result?.id != '6329cdf541c5047250e3d822' &&
+          result?.id != '633d27619abbb80ad0ec512a'
+        ) {
+          userList.push(new UserResponse(jsonUser, true));
+        } else if (
+          role?.id !== '6329cdf541c5047250e3d822' &&
+          role?.id !== '633d27619abbb80ad0ec512a' &&
+          result?.id != '6329cdf541c5047250e3d822' &&
+          result?.id != '633d27619abbb80ad0ec512a'
+        ) {
+          userList.push(new UserResponse(jsonUser, true));
+        }
       }
 
       return response.status(HttpStatus.OK).send({
